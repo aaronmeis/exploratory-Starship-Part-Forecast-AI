@@ -4,155 +4,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Starship Entropy Modeling | Forecasting AI</title>
+    <title>Starship Entropy | Orbital Dynamics</title>
+    <!-- Scripts for React, Babel, Tailwind, and Lucide -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+    <style>
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+    </style>
 </head>
 
-<body class="bg-slate-950 text-slate-100 font-sans">
+<body class="bg-slate-950">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
-        const { BarChart2, Thermometer, Zap, TrendingUp, Info, Activity } = LucideReact;
+        const {
+            Activity,
+            Thermometer,
+            RefreshCw,
+            BarChart3,
+            Layers,
+            Zap,
+            ShieldAlert,
+            Info
+        } = LucideReact;
 
-        const EntropyChart = ({ launchFreq, stress }) => {
+        // --- Compact 3D Entropy Curve ---
+        const EntropyCanvas = ({ launchFrequency, materialStress }) => {
             const canvasRef = useRef(null);
 
             useEffect(() => {
                 const canvas = canvasRef.current;
                 const ctx = canvas.getContext('2d');
-                let offset = 0;
+                let animationFrame;
 
                 const draw = () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const w = canvas.width;
+                    const h = canvas.height;
+                    ctx.clearRect(0, 0, w, h);
 
                     // Draw Grid
                     ctx.strokeStyle = '#1e293b';
                     ctx.lineWidth = 1;
-                    for (let i = 0; i < canvas.width; i += 40) {
-                        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-                    }
-                    for (let i = 0; i < canvas.height; i += 40) {
-                        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+                    for (let i = 0; i < 10; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(i * (w / 10), 0); ctx.lineTo(i * (w / 10), h); ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(0, i * (h / 10)); ctx.lineTo(w, i * (h / 10)); ctx.stroke();
                     }
 
-                    // Draw Degradation Curve
+                    // Draw Curve
                     ctx.beginPath();
-                    ctx.lineWidth = 4;
-                    const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                    ctx.lineWidth = 2;
+                    const gradient = ctx.createLinearGradient(0, h, w, 0);
                     gradient.addColorStop(0, '#3b82f6');
-                    gradient.addColorStop(1, '#f97316');
+                    gradient.addColorStop(0.6, '#f97316');
+                    gradient.addColorStop(1, '#ef4444');
                     ctx.strokeStyle = gradient;
 
-                    const entropyBase = (launchFreq * 0.5) + (stress * 1.5);
-
-                    ctx.moveTo(0, canvas.height - 40);
-                    for (let x = 0; x < canvas.width; x++) {
-                        const y = (canvas.height - 40) -
-                            Math.pow(x / 50, 2) * (entropyBase / 10) -
-                            Math.sin(x * 0.1 + offset) * 5;
+                    ctx.moveTo(0, h * 0.85);
+                    const segments = 100;
+                    for (let i = 0; i <= segments; i++) {
+                        const x = (i / segments) * w;
+                        const freqFactor = launchFrequency / 50;
+                        const stressFactor = materialStress / 50;
+                        const noise = Math.sin(i * 0.2 + Date.now() * 0.002) * 3;
+                        const y = (h * 0.85) - (Math.pow(i / segments, 2) * (h * 0.75) * freqFactor * stressFactor) + noise;
                         ctx.lineTo(x, y);
                     }
                     ctx.stroke();
 
-                    offset += 0.05;
-                    requestAnimationFrame(draw);
+                    animationFrame = requestAnimationFrame(draw);
                 };
-                draw();
-            }, [launchFreq, stress]);
 
-            return <canvas ref={canvasRef} width="600" height="300" className="w-full h-full rounded-xl bg-slate-900 shadow-inner" />;
+                draw();
+                return () => cancelAnimationFrame(animationFrame);
+            }, [launchFrequency, materialStress]);
+
+            return (
+                <div className="relative w-full h-40 bg-slate-950 rounded-lg overflow-hidden border border-slate-800 shadow-inner">
+                    <canvas ref={canvasRef} width={800} height={200} className="w-full h-full opacity-70" />
+                    <div className="absolute top-2 left-3 flex flex-col">
+                        <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">Decay Vector</span>
+                        <span className="text-orange-500 font-bold text-[10px]">LIVE MODEL</span>
+                    </div>
+                </div>
+            );
         };
 
         const App = () => {
-            const [launchFreq, setLaunchFreq] = useState(40);
-            const [stress, setStress] = useState(30);
-            const [isReusable, setIsReusable] = useState(true);
+            const [launchFreq, setLaunchFreq] = useState(65);
+            const [materialStress, setMaterialStress] = useState(40);
+            const [viewMode, setViewMode] = useState('reusable');
 
-            const efficiencyGain = isReusable ? 40 : 0;
+            const efficiencyGain = 40;
+            const baselineInventory = 100;
+            const reusableInventory = 60;
+            const currentInventory = viewMode === 'reusable' ? reusableInventory : baselineInventory;
+            const entropyIndex = (launchFreq * materialStress / 100).toFixed(2);
 
             return (
-                <div className="p-8 h-screen flex flex-col gap-8 bg-gradient-to-br from-slate-950 to-blue-950">
-                    <header className="flex justify-between items-center bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-xl">
-                        <div className="flex items-center gap-4">
-                            <div className="bg-orange-500/20 p-3 rounded-xl border border-orange-500/30">
-                                <Thermometer className="text-orange-400" size={24} />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-black tracking-widest uppercase italic">Starship Entropy Modeling</h1>
-                                <span className="text-[10px] text-slate-500 font-mono">SYSTEM: THERMODYNAMICS v2.1</span>
-                            </div>
+                <div className="h-screen w-full bg-slate-950 text-slate-100 font-sans p-3 flex flex-col overflow-hidden">
+                    {/* Tight Header */}
+                    <header className="flex justify-between items-center mb-3 pb-2 border-b border-slate-800">
+                        <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                            <h1 className="text-lg font-black tracking-tighter uppercase italic">Starship Entropy</h1>
+                            <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400 font-mono">v4.0.2</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase">Comparison Mode</label>
-                            <button
-                                onClick={() => setIsReusable(!isReusable)}
-                                className={`px-4 py-2 rounded-full text-xs font-black transition-all ${isReusable ? 'bg-orange-500 text-white shadow-lg shadow-orange-950/20' : 'bg-slate-800 text-slate-400'}`}
-                            >
-                                {isReusable ? 'REUSABLE MODE' : 'BASELINE MODE'}
-                            </button>
+                        <div className="flex gap-4">
+                            <div className="flex items-center gap-2">
+                                <Activity className="text-blue-400 w-4 h-4" />
+                                <span className="text-[10px] text-slate-500 uppercase">Entropy:</span>
+                                <span className="font-mono font-bold text-sm text-blue-400">{entropyIndex}</span>
+                            </div>
+                            <div className="flex items-center gap-2 border-l border-slate-800 pl-4">
+                                <Zap className="text-orange-400 w-4 h-4" />
+                                <span className="text-[10px] text-slate-500 uppercase">Gain:</span>
+                                <span className="font-mono font-bold text-sm text-orange-400">+{efficiencyGain}%</span>
+                            </div>
                         </div>
                     </header>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-grow">
-                        <div className="lg:col-span-4 space-y-6">
-                            <div className="bg-slate-900/80 p-6 rounded-2xl border border-slate-800 shadow-xl">
-                                <label className="text-[11px] font-bold mb-6 flex items-center gap-2 text-slate-300 uppercase tracking-widest">
-                                    <Zap size={14} className="text-blue-400" />
-                                    Launch Frequency
-                                </label>
-                                <input
-                                    type="range" min="0" max="100" value={launchFreq}
-                                    onChange={(e) => setLaunchFreq(parseInt(e.target.value))}
-                                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500 mb-8"
-                                />
-
-                                <label className="text-[11px] font-bold mb-6 flex items-center gap-2 text-slate-300 uppercase tracking-widest">
-                                    <Activity size={14} className="text-orange-400" />
-                                    Material Stress
-                                </label>
-                                <input
-                                    type="range" min="0" max="100" value={stress}
-                                    onChange={(e) => setStress(parseInt(e.target.value))}
-                                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
-                                />
-                            </div>
-
-                            <div className="bg-gradient-to-br from-blue-900/20 to-orange-900/20 p-6 rounded-2xl border border-blue-500/10">
-                                <h3 className="text-[11px] font-bold mb-4 flex items-center gap-2 text-blue-300 uppercase tracking-widest">
-                                    <TrendingUp size={14} />
-                                    Forecasting Impact
-                                </h3>
+                    <main className="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-3 overflow-hidden">
+                        {/* Left Column - Controls & Logistics */}
+                        <section className="lg:col-span-4 flex flex-col gap-3 overflow-hidden">
+                            {/* Controls */}
+                            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                                <h2 className="text-[10px] font-bold text-slate-500 uppercase mb-4 flex items-center gap-2">
+                                    <Layers className="w-3 h-3" /> Parameters
+                                </h2>
                                 <div className="space-y-4">
-                                    <div className="flex justify-between items-end">
-                                        <span className="text-[10px] text-slate-500 uppercase font-black">Efficiency Gain</span>
-                                        <span className="text-3xl font-mono font-black text-orange-400">{efficiencyGain}%</span>
+                                    <div>
+                                        <div className="flex justify-between mb-1">
+                                            <label className="text-[11px] font-semibold text-slate-400 tracking-wide">Frequency</label>
+                                            <span className="text-blue-400 font-mono text-[11px]">{launchFreq} Hz</span>
+                                        </div>
+                                        <input
+                                            type="range" min="1" max="100" value={launchFreq}
+                                            onChange={(e) => setLaunchFreq(parseInt(e.target.value))}
+                                            className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                        />
                                     </div>
-                                    <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-900">
-                                        <div
-                                            className="bg-gradient-to-r from-blue-600 to-orange-500 h-full transition-all duration-1000"
-                                            style={{ width: `${efficiencyGain}%` }}
+                                    <div>
+                                        <div className="flex justify-between mb-1">
+                                            <label className="text-[11px] font-semibold text-slate-400 tracking-wide">Stress</label>
+                                            <span className="text-orange-400 font-mono text-[11px]">{materialStress} MPa</span>
+                                        </div>
+                                        <input
+                                            type="range" min="1" max="100" value={materialStress}
+                                            onChange={(e) => setMaterialStress(parseInt(e.target.value))}
+                                            className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
                                         />
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="lg:col-span-8 flex flex-col gap-6">
-                            <div className="bg-slate-900/40 rounded-3xl border border-slate-800 p-8 flex-grow shadow-2xl overflow-hidden relative">
-                                <div className="absolute top-8 left-8 flex items-center gap-2 z-10">
-                                    <BarChart2 size={16} className="text-slate-500" />
-                                    <span className="text-[10px] font-black uppercase text-slate-500">Degradation Curve (3D Projected)</span>
+                            {/* Mini Logistics */}
+                            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex-grow">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h2 className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2">
+                                        <BarChart3 className="w-3 h-3" /> Efficiency
+                                    </h2>
+                                    <button
+                                        onClick={() => setViewMode(v => v === 'reusable' ? 'baseline' : 'reusable')}
+                                        className={`text-[9px] px-2 py-0.5 rounded border transition-all uppercase font-bold ${viewMode === 'reusable' ? 'bg-blue-500/10 border-blue-500/50 text-blue-300' : 'bg-slate-800 border-slate-700 text-slate-500'
+                                            }`}
+                                    >
+                                        {viewMode === 'reusable' ? 'Reusable' : 'Baseline'}
+                                    </button>
                                 </div>
-                                <EntropyChart launchFreq={launchFreq} stress={stress} />
+                                <div className="flex items-end gap-3 h-16 mb-2 px-4">
+                                    <div className="flex-1 flex flex-col items-center gap-1">
+                                        <div className="w-full bg-slate-800 rounded-t h-full" />
+                                        <span className="text-[8px] text-slate-600">BSL</span>
+                                    </div>
+                                    <div className="flex-1 flex flex-col items-center gap-1">
+                                        <div
+                                            className={`w-full rounded-t transition-all duration-500 ${viewMode === 'reusable' ? 'bg-orange-500' : 'bg-slate-800'}`}
+                                            style={{ height: `${viewMode === 'reusable' ? reusableInventory : baselineInventory}%` }}
+                                        />
+                                        <span className={`text-[8px] ${viewMode === 'reusable' ? 'text-orange-500' : 'text-slate-600'}`}>REU</span>
+                                    </div>
+                                </div>
+                                <p className="text-[10px] text-slate-500 text-center font-mono">
+                                    REQ: <span className="text-slate-100">{currentInventory} units</span>
+                                </p>
                             </div>
+
+                            {/* Alert */}
+                            <div className="bg-orange-500/5 border border-orange-500/20 p-2 rounded-lg flex gap-2 items-center">
+                                <ShieldAlert className="w-3 h-3 text-orange-500 shrink-0" />
+                                <p className="text-[9px] text-orange-200/50 leading-tight">Shielding integrity at 98.4% critical threshold.</p>
+                            </div>
+                        </section>
+
+                        {/* Right Column - Visualizer & Telemetry */}
+                        <section className="lg:col-span-8 flex flex-col gap-3 overflow-hidden">
+                            <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex flex-col h-full overflow-hidden">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h2 className="text-[10px] font-bold text-slate-200 uppercase tracking-tighter italic">Entropy Field Visualization</h2>
+                                    <div className="flex items-center gap-2 text-slate-600 text-[9px] font-mono">
+                                        <RefreshCw className="w-2.5 h-2.5 animate-spin-slow" /> LIVE_STREAM
+                                    </div>
+                                </div>
+
+                                <EntropyCanvas launchFrequency={launchFreq} materialStress={materialStress} />
+
+                                <div className="grid grid-cols-3 gap-3 mt-4">
+                                    <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800">
+                                        <div className="flex items-center gap-1.5 mb-1 text-slate-500">
+                                            <Thermometer className="w-3 h-3 text-orange-500" />
+                                            <span className="text-[9px] font-bold uppercase">Thermal</span>
+                                        </div>
+                                        <p className="text-sm font-mono text-white">{(materialStress * 1.45).toFixed(1)}°K</p>
+                                        <div className="mt-1.5 w-full bg-slate-900 h-0.5 rounded-full overflow-hidden">
+                                            <div className="bg-orange-500 h-full" style={{ width: `${materialStress}%` }} />
+                                        </div>
+                                    </div>
+
+                                    <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800">
+                                        <div className="flex items-center gap-1.5 mb-1 text-slate-500">
+                                            <RefreshCw className="w-3 h-3 text-blue-500" />
+                                            <span className="text-[9px] font-bold uppercase">Latency</span>
+                                        </div>
+                                        <p className="text-sm font-mono text-white">{(120 / (launchFreq / 10)).toFixed(1)}h</p>
+                                        <div className="mt-1.5 w-full bg-slate-900 h-0.5 rounded-full overflow-hidden">
+                                            <div className="bg-blue-500 h-full" style={{ width: `${100 - launchFreq}%` }} />
+                                        </div>
+                                    </div>
+
+                                    <div className="p-2 bg-slate-950/50 rounded-lg border border-slate-800">
+                                        <div className="flex items-center gap-1.5 mb-1 text-slate-500">
+                                            <Info className="w-3 h-3 text-green-500" />
+                                            <span className="text-[9px] font-bold uppercase">Lifecycle</span>
+                                        </div>
+                                        <p className="text-sm font-mono text-white">{Math.max(1, Math.floor(25 - (entropyIndex / 2)))} CYC</p>
+                                        <div className="mt-1.5 w-full bg-slate-900 h-0.5 rounded-full overflow-hidden">
+                                            <div className="bg-green-500 h-full" style={{ width: `${Math.max(0, 100 - entropyIndex)}%` }} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-auto pt-3 flex gap-2">
+                                    <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition-all uppercase tracking-tighter italic text-[10px]">
+                                        Export Payload
+                                    </button>
+                                    <button className="flex-1 border border-slate-800 hover:bg-slate-800 text-slate-400 font-bold py-2 rounded-lg transition-all uppercase tracking-tighter italic text-[10px]">
+                                        Mesh Calibration
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+
+                    {/* Tiny Footer */}
+                    <footer className="mt-2 flex justify-between items-center text-slate-600 text-[8px] font-mono tracking-widest uppercase">
+                        <span>© 2026 Orbital Dynamics</span>
+                        <div className="flex gap-4">
+                            <span>Security: LVL 5</span>
+                            <span>Status: Nominal</span>
                         </div>
-                    </div>
+                    </footer>
                 </div>
             );
         };
