@@ -1,5 +1,8 @@
 # Predictive Demand Forecasting for Reusable Rocket Parts
 
+> [!NOTE]
+> This is for exploratory learning and understanding and knowledge development with mockup data from Kaggle and NASA.
+
 **Type**: Time-series neural net dashboard
 
 **Description**: AI model that forecasts part needs for rapid Starship reuse cycles—factoring in launch frequency, failure rates, and cost drops from reusability.
