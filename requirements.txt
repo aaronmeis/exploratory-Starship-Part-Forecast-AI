@@ -1,0 +1,8 @@
+# Starship-Part-Forecast-AI Requirements
+# To be populated with:
+# prophet
+# tensorflow
+# pandas
+# numpy
+# plotly
+# streamlit

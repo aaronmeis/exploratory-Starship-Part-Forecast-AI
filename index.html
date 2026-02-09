@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Demand Forecasting for Reusable Rocket Parts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e14;
+            --text: #e1e1e1;
+            --accent: #ff6a00;
+            --accent-glow: rgba(255, 106, 0, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-out;
+        }
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .type {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            display: block;
+        }
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 2rem;
+        }
+        .first-principles {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid var(--accent);
+            border-radius: 4px;
+        }
+        .first-principles h2 {
+            font-size: 1rem;
+            margin-top: 0;
+            color: #fff;
+        }
+        .first-principles p {
+            font-style: italic;
+            margin-bottom: 0;
+        }
+        .glass-effect {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 40%);
+            z-index: -1;
+            opacity: 0.2;
+            animation: pulse 10s infinite alternate;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(10px, 10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-effect"></div>
+    <div class="container">
+        <h1>Predictive Demand Forecasting for Reusable Rocket Parts</h1>
+        <span class="type">Time-series Neural Net Dashboard</span>
+        
+        <p class="description">
+            AI model that forecasts part needs for rapid Starship reuse cycles—factoring in launch frequency, failure rates, and cost drops from reusability.
+        </p>
+
+        <div class="first-principles">
+            <h2>First Principles</h2>
+            <p>"Matter degrades—heat, stress, cycles. No guesses, just entropy math and launch physics driving demand curves."</p>
+        </div>
+    </div>
+</body>
+</html>
