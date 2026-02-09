@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predictive Demand Forecasting for Reusable Rocket Parts</title>
+    <title>Starship Part Demand Forecasting</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Inter:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0e14;
-            --text: #e1e1e1;
-            --accent: #ff6a00;
-            --accent-glow: rgba(255, 106, 0, 0.4);
+            --bg: #050515;
+            --text: #e1e1fb;
+            --accent: #f97316;
+            --accent-glow: rgba(249, 115, 22, 0.3);
             --card-bg: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(249, 115, 22, 0.15);
         }
+
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
@@ -25,91 +28,180 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-y: auto;
         }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            perspective: 500px;
+            transform: rotateX(60deg) scale(2);
+            opacity: 0.2;
+        }
+
         .container {
-            max-width: 800px;
-            padding: 2rem;
+            max-width: 1400px;
+            width: 95%;
+            margin: 3rem auto;
+            padding: 2.5rem;
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            animation: fadeIn 1s ease-out;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 50px rgba(249, 115, 22, 0.1);
+            animation: fadeIn 1.2s ease-out;
+            display: flex;
+            gap: 2.5rem;
+            align-items: flex-start;
         }
+
+        .text-content {
+            flex: 0 0 25%;
+            min-width: 250px;
+        }
+
+        .visualizer-area {
+            flex: 1;
+            width: 100%;
+        }
+
         h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2rem;
+            margin-top: 0;
             margin-bottom: 0.5rem;
             background: linear-gradient(135deg, #fff 0%, #aaa 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
+            line-height: 1.2;
         }
+
         .type {
             color: var(--accent);
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
             display: block;
         }
+
         .description {
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.6;
-            color: #ccc;
-            margin-bottom: 2rem;
+            color: #b0b0d0;
+            margin-bottom: 1.5rem;
         }
+
         .first-principles {
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 1.2rem;
+            background: rgba(249, 115, 22, 0.03);
             border-left: 4px solid var(--accent);
             border-radius: 4px;
+            font-size: 0.9rem;
         }
+
         .first-principles h2 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             margin-top: 0;
             color: #fff;
         }
+
         .first-principles p {
             font-style: italic;
             margin-bottom: 0;
         }
-        .glass-effect {
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 40%);
-            z-index: -1;
-            opacity: 0.2;
-            animation: pulse 10s infinite alternate;
+
+        .visualizer-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.1);
         }
+
+        .visualizer-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .footer-links {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a {
+            color: var(--accent);
+            text-decoration: none;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        /* Mobile Layout */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                margin: 1rem auto;
+                padding: 1.5rem;
+            }
+
+            .text-content {
+                flex: none;
+                width: 100%;
+            }
+
+            .visualizer-container {
+                height: 500px;
+            }
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1) translate(0, 0); }
-            100% { transform: scale(1.1) translate(10px, 10px); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="glass-effect"></div>
+    <div class="grid-bg"></div>
     <div class="container">
-        <h1>Predictive Demand Forecasting for Reusable Rocket Parts</h1>
-        <span class="type">Time-series Neural Net Dashboard</span>
-        
-        <p class="description">
-            AI model that forecasts part needs for rapid Starship reuse cycles—factoring in launch frequency, failure rates, and cost drops from reusability.
+        AI model that forecasts part needs for rapid Starship reuse cycles—factoring in launch frequency, failure rates,
+        and cost drops from reusability.
         </p>
 
         <div class="first-principles">
             <h2>First Principles</h2>
-            <p>"Matter degrades—heat, stress, cycles. No guesses, just entropy math and launch physics driving demand curves."</p>
+            <p>"Matter degrades—heat, stress, cycles. No guesses, just entropy math and launch physics driving demand
+                curves."</p>
         </div>
     </div>
 </body>
+
 </html>

@@ -6,9 +6,13 @@
 
 **First Principles**: Matter degrades—heat, stress, cycles. No guesses, just entropy math and launch physics driving demand curves.
 
-**Approach**: Use time-series AI (LSTM or Prophet) on simulated data showing how reusability cuts inventory by thirty to forty percent. Add a dashboard comparing pre- and post-reusable scenarios.
+**Approach**: Incorporate scenarios where launch frequency accelerates part wear. Model the fifty percent safety stock Reduction from forty percent efficiency gains.
 
 **Visual Context**: Starship assembly lines show the production scale that makes this forecasting critical.
+
+## Interactive Visualizer
+🚀 **[Launch Starship Entropy Model](visualizer.html)**
+Explore Thermodynamic AI forecasting and degradation curves in real-time.
 
 ## Overview
 This repository explores predictive maintenance for starship components using neural networks. It focuses on the second law of thermodynamics (entropy) and first-principles analysis of aerospace hardware.
